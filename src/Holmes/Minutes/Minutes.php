@@ -31,11 +31,7 @@ class Minutes {
    */
   static public function hours($hours = 1)
   {
-    // lets make sure we have a number first
-    if (!is_numeric($hours)) {
-      $hours = 1;
-    }
-    return 60 * $hours;
+    return 60 * static::validNumber($hours);
   }
 
   /**
@@ -46,11 +42,7 @@ class Minutes {
    */
   static public function days($days = 1)
   {
-    // lets make sure we have a number first
-    if (!is_numeric($days)) {
-      $days = 1;
-    }
-    return static::hours(24) * $days;
+    return static::hours(24) * static::validNumber($days);
   }
 
   /**
@@ -61,11 +53,7 @@ class Minutes {
    */
   static public function weeks($weeks = 1)
   {
-    // lets make sure we have a number first
-    if (!is_numeric($weeks)) {
-      $weeks = 1;
-    }
-    return static::days(7) * $weeks;
+    return static::days(7) * static::validNumber($weeks);
   }
 
   /**
@@ -76,16 +64,11 @@ class Minutes {
    */
   static public function months($months = 1)
   {
-    // lets make sure we have a number first
-    if (!is_numeric($months)) {
-      $months = 1;
-    }
-
     // Months are aren't as standard as the other methods
     // as there isn't a set number of days in a month
     // so we need to calculate how many days there are
     // in the number of months we have been given
-    $days = static::numDaysBetweenDates(date('Y-m-d'), date('Y-m-d', strtotime('+ '.$months.' months')));
+    $days = static::numDaysBetweenDates(date('Y-m-d'), date('Y-m-d', strtotime('+ '.(static::validNumber($months)).' months')));
 
     return static::days($days);
   }
@@ -98,18 +81,26 @@ class Minutes {
    */
   static public function years($years = 1)
   {
-    // lets make sure we have a number first
-    if (!is_numeric($years)) {
-      $years = 1;
-    }
-
     // Years are aren't as standard as the other methods
     // as there isn't a set number of days in a year (leap year)
     // so we need to calculate how many days there are
     // in the number of years we have been given
-    $days = static::numDaysBetweenDates(date('Y-m-d'), date('Y-m-d', strtotime('+ '.$years.' years')));
+    $days = static::numDaysBetweenDates(date('Y-m-d'), date('Y-m-d', strtotime('+ '.(static::validNumber($years)).' years')));
 
     return static::days($days);
+  }
+
+  /**
+   * Helper function to check that a number is valid
+   * Used by most methods in this class
+   *
+   * @param int|float $number the number to check
+   * @param int|float $default a default value if the number is not valid
+   * @return int|float
+   */
+  static protected function validNumber($number, $default = 1)
+  {
+    return is_numeric($number) ? $number : $default;
   }
 
   /**
